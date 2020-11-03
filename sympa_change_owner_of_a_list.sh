@@ -1,4 +1,6 @@
 #!/bin/bash
+# Change owner of a sympa mailing list (assumes sympa is installed from source)
+# Usage : change_owner_of_a_list.sh domain listname new_listmaster
 domain=$1
 list=$2
 new_listmaster=$3
