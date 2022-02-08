@@ -1,6 +1,6 @@
 #!/bin/bash
 #set -x
-# Make function for projects and task
+# David Delon david.delon@clapas.net February 2022
 
 function getframesbyday {
     i=0
@@ -81,10 +81,10 @@ do
                 then # user pressed <Cancel> button
                     continue
                 fi
-                if [[ $sel != "" ]] # project selected
+                if [[ $sel != "" ]] # tag selected
                 then
                     tag=$sel
-                    watson stop
+                    watson stop # stop current task ! 
                     watson start $project +$tag
                     watson stop 
                 fi
