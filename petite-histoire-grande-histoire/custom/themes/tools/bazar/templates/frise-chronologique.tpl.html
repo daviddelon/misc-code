@@ -1,0 +1,119 @@
+<?php 
+
+/* Un template Bazar Yeswiki pour afficher des petites histoires  et grandes histoires saisies depuis un formulaire ayant la structure suivante :
+
+texte***bf_annee***Annee*** ***5*** ***-?\d{1,4}***text***1*** *** *** * *** * *** *** *** ***
+radio***ListeTypehistoire***Type*** *** *** ***bf_typehistoire*** ***1*** *** *** * *** * *** *** *** ***
+texte***bf_nom***Histoire***60***255*** *** ***text***1*** *** *** * *** * *** *** *** ***
+image***bf_image***Illustration***140***140***600***600***right***0*** ***Votre image doit être au format .jpg ou .gif ou .png*** * *** * *** *** *** ***
+titre***{{bf_annee}}  - {{bf_nom}}*** ***
+textelong***bf_description***Description***40*** *** *** ***wiki***0*** *** *** * *** * *** *** *** ***
+
+Demo sur : https://montpellier-garrigues.site-coop.net/?petite-histoire-grande-histoire-eau
+
+David Delon - Licence GPL - Juillet 2023
+
+L'affichage repose entièrement sur l'utilisation de https://github.com/squarechip/timeline de Mike Collins (squarechip) sous licence MIT
+
+*/
+
+
+$count=count($fiches);
+if ($count>0 ) { ?>
+
+
+<?php
+
+if (!function_exists('date_compare')) {
+  //tri par ordre chronologique
+  function date_compare($a, $b)
+  {
+      $t1 = $a['bf_annee'];
+      $t2 = $b['bf_annee'];
+      return $t1 - $t2;
+  }
+}
+
+usort($fiches, 'date_compare');
+
+$pixelsimage = 250;
+$output = '';
+
+$output = '<div class="timeline">
+<div class="timeline__wrap">
+<div class="timeline__items">';
+
+foreach ($fiches as $key => $fiche) {
+
+
+  
+      $output .= '
+        <div class="timeline__item">
+          <div class="timeline__content">';
+        
+
+
+    if (!empty($fiche['imagebf_image']) and file_exists('files/'.$fiche['imagebf_image'])) {
+        $url = redimensionner_image('files/'.$fiche['imagebf_image'], 'cache/image_'.$pixelsimage.'_'.$pixelsimage.'_'.$fiche['imagebf_image'], $pixelsimage, $pixelsimage);
+        $output.=' <img src="' .$url . '" alt="' . $fiche['bf_nom'] .'">';
+    } 
+    else {
+        $output.='
+        <h2> ' . $fiche['bf_annee']. '</h2>
+        ' . $fiche['bf_nom']  ;
+
+    }
+
+
+
+        
+      $output .= '
+          </div>
+        </div>';
+}
+  
+$output .= '
+      </div>
+    </div>
+  </div>';
+  
+  
+
+echo $output;
+
+?>
+
+
+<?php
+$GLOBALS['wiki']->addJavascriptFile('custom/themes/tools/bazar/javascripts/timeline.min.js',true);  // no defer
+$GLOBALS['wiki']->addCSSFile('custom/themes/tools/bazar/css/timeline.min.css');
+
+$start=intval($count/2); // affichage a partir du milieu
+
+$script='
+$(document).ready(function() {
+$(".timeline").timeline({
+    forceVerticalMode: 800,
+    mode: "horizontal",
+    visibleItems: 6,
+    moveItems:3, 
+    startIndex:'.$start.'
+  });
+})
+';
+
+$GLOBALS['wiki']->AddJavascript($script);   
+
+}
+
+$css='
+#yw-main .yw-main-content{
+    max-width: none;
+}
+.timeline__content {
+    border:0px;
+}';
+
+$GLOBALS['wiki']->AddCSS($css);   
+
+?>
