@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /* Un template Bazar Yeswiki pour afficher des petites histoires  et grandes histoires saisies depuis un formulaire ayant la structure suivante :
 
@@ -18,95 +18,90 @@ L'affichage repose entièrement sur l'utilisation de https://github.com/squarech
 */
 
 
-$count=count($fiches);
-if ($count>0 ) { ?>
+$count = count($fiches);
+if ($count > 0) {
 
 
-<?php
 
-if (!function_exists('date_compare')) {
-  //tri par ordre chronologique
-  function date_compare($a, $b)
-  {
+  if (!function_exists('date_compare')) {
+    //tri par ordre chronologique
+    function date_compare($a, $b)
+    {
       $t1 = $a['bf_annee'];
       $t2 = $b['bf_annee'];
       return $t1 - $t2;
+    }
   }
-}
 
-usort($fiches, 'date_compare');
+  usort($fiches, 'date_compare');
 
-$pixelsimage = 250;
-$output = '';
+  $pixelsimage = 250;
 
-$output = '<div class="timeline">
+
+  $output = '<div class="timeline">
 <div class="timeline__wrap">
 <div class="timeline__items">';
 
-foreach ($fiches as $key => $fiche) {
+  foreach ($fiches as $key => $fiche) {
 
 
-  
-      $output .= '
+
+    $output .= '
         <div class="timeline__item">
           <div class="timeline__content">';
-        
 
 
-    if (!empty($fiche['imagebf_image']) and file_exists('files/'.$fiche['imagebf_image'])) {
-        $url = redimensionner_image('files/'.$fiche['imagebf_image'], 'cache/image_'.$pixelsimage.'_'.$pixelsimage.'_'.$fiche['imagebf_image'], $pixelsimage, $pixelsimage);
-        $output.=' <img src="' .$url . '" alt="' . $fiche['bf_nom'] .'">';
-    } 
-    else {
-        $output.='
-        <h2> ' . $fiche['bf_annee']. '</h2>
-        ' . $fiche['bf_nom']  ;
+
+    if (!empty($fiche['imagebf_image']) and file_exists('files/' . $fiche['imagebf_image'])) {
+      $url = redimensionner_image('files/' . $fiche['imagebf_image'], 'cache/image_' . $pixelsimage . '_' . $pixelsimage . '_' . $fiche['imagebf_image'], $pixelsimage, $pixelsimage);
+      $output .= ' <img src="' . $url . '" alt="' . $fiche['bf_nom'] . '">';
+    } else {
+      $output .= '
+        <h2> ' . $fiche['bf_annee'] . '</h2>
+        ' . $fiche['bf_nom'];
 
     }
 
 
 
-        
-      $output .= '
+
+    $output .= '
           </div>
         </div>';
-}
-  
-$output .= '
+  }
+
+  $output .= '
       </div>
     </div>
   </div>';
-  
-  
-
-echo $output;
-
-?>
 
 
-<?php
-$GLOBALS['wiki']->addJavascriptFile('custom/themes/tools/bazar/javascripts/timeline.min.js',true);  // no defer
-$GLOBALS['wiki']->addCSSFile('custom/themes/tools/bazar/css/timeline.min.css');
 
-$start=intval($count/2); // affichage a partir du milieu
+  echo $output;
 
-$script='
+
+  $GLOBALS['wiki']->addJavascriptFile('custom/themes/tools/bazar/javascripts/timeline.min.js', true); // no defer
+  $GLOBALS['wiki']->addCSSFile('custom/themes/tools/bazar/css/timeline.min.css');
+
+  $start = intval($count / 2); // affichage a partir du milieu
+
+  $script = '
 $(document).ready(function() {
 $(".timeline").timeline({
     forceVerticalMode: 800,
     mode: "horizontal",
     visibleItems: 6,
     moveItems:3, 
-    startIndex:'.$start.'
+    startIndex:' . $start . '
   });
 })
 ';
 
-$GLOBALS['wiki']->AddJavascript($script);   
+  $GLOBALS['wiki']->AddJavascript($script);
 
 }
 
-$css='
+$css = '
 #yw-main .yw-main-content{
     max-width: none;
 }
@@ -114,6 +109,6 @@ $css='
     border:0px;
 }';
 
-$GLOBALS['wiki']->AddCSS($css);   
+$GLOBALS['wiki']->AddCSS($css);
 
 ?>
